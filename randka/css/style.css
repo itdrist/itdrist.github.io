@@ -106,6 +106,10 @@ a:hover, a:focus {
     color: #FC07A0;
 }
 
+.second-color {
+    color: #0766E6;
+}
+
 .white-text {
     color: #FFF;
 }
@@ -629,6 +633,10 @@ header {
 
 .home-wrapper img {
   width: 20%;
+}
+
+.home-wrapper .row {
+  margin-top: 40px;
 }
 
 .breadcrumb>li+li:before {
