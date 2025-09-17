@@ -1,0 +1,101 @@
+{
+  "bialogora": {
+    "name": "Dom Rekolekcyjny – Białogóra",
+    "targets": {
+      "room": [
+        "https://www.dombialogora.pl/galeria/galerie/112/mini17-12-04-12-55-13-pokoje1.jpg"
+      ],
+      "hall": [
+        "https://www.dombialogora.pl/galeria/galerie/106/mini25-01-29-09-34-41-konf1.jpg"
+      ],
+      "chapel": [
+        "https://www.dombialogora.pl/galeria/galerie/110/mini25-01-29-09-37-17-kaplica1.jpg"
+      ],
+      "dining": [
+        "https://www.dombialogora.pl/galeria/galerie/113/mini17-12-04-12-55-54-stolowka3.jpg"
+      ],
+      "exterior": [
+        "https://www.dombialogora.pl/galeria/galerie/108/mini25-01-29-09-21-21-gl6.jpg"
+      ]
+    },
+    "pages": [
+      "https://www.dombialogora.pl/galeria.html",
+      "https://www.dombialogora.pl/galeria/pokoje.html",
+      "https://www.dombialogora.pl/galeria/sala-rekreacyjna.html",
+      "https://www.dombialogora.pl/galeria/kaplica.html",
+      "https://www.dombialogora.pl/galeria/stolowka.html",
+      "https://www.dombialogora.pl/galeria/budynek-glowny.html"
+    ]
+  },
+  "debki": {
+    "name": "Ośrodek Zmartwychwstańców – Dębki",
+    "targets": {
+      "room": [
+        "https://debki-cr.pl/wp-content/uploads/2024/09/IMG_0885-300x225.jpg"
+      ],
+      "hall": [
+        "https://debki-cr.pl/wp-content/uploads/2024/09/IMG_0886.jpg"
+      ],
+      "chapel": [
+        "https://debki-cr.pl/wp-content/uploads/2024/09/IMG_0884.jpg"
+      ],
+      "dining": [
+        "https://debki-cr.pl/wp-content/uploads/2024/09/IMG_0925-scaled.jpg"
+      ],
+      "exterior": [
+        "https://debki-cr.pl/wp-content/uploads/2024/09/debki2-1-1024x683.jpg"
+      ]
+    },
+    "pages": [
+      "https://debki-cr.pl/dla-serca-i-ducha/",
+      "https://debki-cr.pl/",
+      "https://debki-cr.pl/galeria/"
+    ]
+  },
+  "warzenko": {
+    "name": "Caritas – Ośrodek Warzenko",
+    "targets": {
+      "room": [],
+      "hall": [],
+      "chapel": [],
+      "dining": [],
+      "exterior": []
+    },
+    "pages": [
+      "https://www.osrodekwarzenko.pl/galerie/album/8/",
+      "https://www.osrodekwarzenko.pl/galerie/album/5/",
+      "https://www.osrodekwarzenko.pl/galerie/album/12/",
+      "https://www.osrodekwarzenko.pl/galerie/album/13/",
+      "https://www.osrodekwarzenko.pl/galerie/album/9/"
+    ]
+  },
+  "rybaki": {
+    "name": "Caritas – Rybaki",
+    "targets": {
+      "room": [],
+      "hall": [],
+      "chapel": [],
+      "dining": [],
+      "exterior": []
+    },
+    "pages": [
+      "https://rybaki.org.pl/",
+      "https://www.facebook.com/OsrodekwRybakach/"
+    ]
+  },
+  "dworek-olenka": {
+    "name": "Dworek Oleńka – Tuchom",
+    "targets": {
+      "room": [],
+      "hall": [],
+      "chapel": [],
+      "dining": [],
+      "exterior": []
+    },
+    "pages": [
+      "https://www.weselezklasa.pl/ogloszenia-weselne/dworek-olenka,38341/",
+      "https://www.instagram.com/dworekolenka_aleksandraresort/",
+      "https://www.facebook.com/p/Dworek-Ole%C5%84ka-100080297484914/"
+    ]
+  }
+}

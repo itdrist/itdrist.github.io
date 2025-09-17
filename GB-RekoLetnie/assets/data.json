@@ -1,0 +1,60 @@
+{
+  "top5": [
+    {
+      "slug": "bialogora",
+      "name": "Dom Rekolekcyjny Diecezji Pelplińskiej – Białogóra",
+      "location": "Białogóra (morze)",
+      "capacity": 190,
+      "distance_km": 85,
+      "score": 92,
+      "cost_low": 100,
+      "cost_high": 130,
+      "link": "http://www.dombialogora.pl"
+    },
+    {
+      "slug": "debki",
+      "name": "Ośrodek Zmartwychwstańców – Dębki",
+      "location": "Dębki (morze)",
+      "capacity": 130,
+      "distance_km": 80,
+      "score": 86,
+      "cost_low": 200,
+      "cost_high": 260,
+      "link": "https://debki-cr.pl"
+    },
+    {
+      "slug": "rybaki",
+      "name": "Caritas Archidiecezji Warmińskiej – Rybaki",
+      "location": "Rybaki / Jez. Łańsk",
+      "capacity": 150,
+      "distance_km": 180,
+      "score": 85,
+      "cost_low": 90,
+      "cost_high": 120,
+      "link": "http://www.rybaki.org.pl"
+    },
+    {
+      "slug": "warzenko",
+      "name": "Caritas Archidiecezji Gdańskiej – Warzenko",
+      "location": "Warzenko / Jez. Tuchomskie",
+      "capacity": 119,
+      "distance_km": 20,
+      "score": 84,
+      "cost_low": 160,
+      "cost_high": 220,
+      "link": "http://www.osrodekwarzenko.pl"
+    },
+    {
+      "slug": "dworek-olenka",
+      "name": "Dworek Oleńka – Tuchom",
+      "location": "Tuchom / Jez. Tuchomskie",
+      "capacity": 92,
+      "distance_km": 15,
+      "score": 77,
+      "cost_low": 140,
+      "cost_high": 170,
+      "link": "http://www.dworekolenka.pl"
+    }
+  ],
+  "ranking": []
+}

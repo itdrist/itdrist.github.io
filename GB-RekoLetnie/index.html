@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rekolekcje – Gwiazda Betlejemska</title>
+  <meta name="description" content="Podsumowanie raportu ośrodków rekolekcyjnych – one-pager dla wspólnoty Gwiazda Betlejemska z Żukowa" />
+  <link rel="preload" as="image" href="assets/GBLogo_oryginalne.png">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" id="top">
+    <nav class="nav">
+      <a href="#top" class="brand">
+        <img src="assets/GBLogo_oryginalne.png" alt="Logo Gwiazda Betlejemska" />
+        <span>Gwiazda Betlejemska</span>
+      </a>
+      <div class="nav-links">
+        <a href="#rekomendacje">Rekomendacje</a>
+        <a href="#ranking">Ranking</a>
+        <a href="#infografiki">Infografiki</a>
+        <a href="#kontakt">Kontakt</a>
+      </div>
+    </nav>
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>Rekolekcje wakacyjne 2026/27</h1>
+        <p>One-pager z wnioskami z raportu i propozycjami miejsc spełniających wymagania dla ok. <strong>150 osób</strong>.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#rekomendacje">Zobacz TOP 5</a>
+          <a class="btn ghost" href="#ranking">Przegląd 1–18</a>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section id="rekomendacje" class="section">
+      <h2>TOP 5 rekomendowanych ośrodków</h2>
+      <p class="section-intro">Wybrane według: kaplica/sala 150, ≥3 sale dla dzieci, stołówka 150 (diety), pokoje rodzinne + 2-os., zaplecze techniczne, parking, plac zabaw, rekreacja przy wodzie, odległość ≤ 200 km.</p>
+      <div id="cards" class="cards"></div>
+    </section>
+
+    <section id="ranking" class="section alt">
+      <h2>Ranking 1–18 (ocena łączna)</h2>
+      <div class="table-actions">
+        <label>Szukaj: <input id="search" type="search" placeholder="np. Dębki, Caritas, jezioro"></label>
+      </div>
+      <div class="table-wrap">
+        <table id="rankingTable" class="ranking">
+          <thead>
+            <tr>
+              <th data-key="idx">#</th>
+              <th data-key="name" class="sortable">Nazwa</th>
+              <th data-key="where" class="sortable">Miejsce</th>
+              <th data-key="distance" class="sortable">Odległość (km)</th>
+              <th data-key="cost" class="sortable">Koszt (PLN/doba)</th>
+              <th data-key="score" class="sortable">Ocena</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="infografiki" class="section">
+      <h2>Infografiki z raportu</h2>
+      <div class="gallery">
+        <a href="assets/infographics/infografika_top5.png" class="lightbox"><img src="assets/infographics/infografika_top5.png" alt="Top 5"></a>
+        <a href="assets/infographics/infografika_ranking.png" class="lightbox"><img src="assets/infographics/infografika_ranking.png" alt="Ranking"></a>
+        <a href="assets/infographics/infografika_odleglosci.png" class="lightbox"><img src="assets/infographics/infografika_odleglosci.png" alt="Odległości"></a>
+        <a href="assets/infographics/infografika_koszty.png" class="lightbox"><img src="assets/infographics/infografika_koszty.png" alt="Koszty"></a>
+        <a href="assets/infographics/infografika_checklist_top5.png" class="lightbox"><img src="assets/infographics/infografika_checklist_top5.png" alt="Checklist"></a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="kontakt" class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h3>Kontakt</h3>
+        <p>Wspólnota „Gwiazda Betlejemska” – <span class="nowrap">kontakt przez parafię w Żukowie</span>.</p>
+      </div>
+      <div class="foot-actions">
+        <a class="btn ghost" href="#top" aria-label="Do góry">Do góry ↑</a>
+      </div>
+    </div>
+    <p class="copy">© <span id="year"></span> Gwiazda Betlejemska • One-pager raportowy</p>
+  </footer>
+
+  <div id="lightbox" class="lightbox-modal" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Zamknij">×</button>
+    <img id="lightbox-img" alt="Podgląd" />
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
