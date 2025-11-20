@@ -37,6 +37,32 @@
     </script>
 
     <style>
+    /* NAPRAWA 1: Wymuszenie prawidłowej bazy dla jednostek REM (Tailwind) */
+    html {
+        font-size: 16px !important; 
+    }
+
+    /* NAPRAWA 2: Reset ustawień body, które motyw TwentyTwenty może nadpisywać */
+    body {
+        font-size: 1rem !important; /* Powrót do 16px */
+        line-height: 1.5 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important; /* Usuwa wąskie gardło szablonu */
+    }
+
+    /* NAPRAWA 3: Usunięcie marginesów kontenerów WordPressa */
+    .entry-content, .post-inner, .entry-header {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* NAPRAWA 4: Ukrycie zbędnych elementów motywu, jeśli jakieś zostały */
+    .skip-link, .screen-reader-text, #wpadminbar {
+        /* Opcjonalnie, jeśli pasek admina przeszkadza w podglądzie */
+    }
         /* Style ogólne */
         body {
             -webkit-print-color-adjust: exact !important;
@@ -116,7 +142,7 @@
         <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <!-- Pełne Logo Fundacji dla web -->
-                <img src="GBLogo_oryginalne.png" alt="Fundacja Gwiazda Betlejemska Logo" class="h-12 header-logo-web">
+                <img src="../wp-content/uploads/2023/05/GBLogo_logo.png" alt="Fundacja Gwiazda Betlejemska Logo" class="h-12 header-logo-web">
             </div>
             <button onclick="window.print()" class="bg-brand-gold hover:bg-yellow-600 text-white px-6 py-2 rounded-full font-bold transition-colors flex items-center gap-2 text-sm shadow-lg">
                 <i class="fas fa-file-pdf"></i> Pobierz Ofertę (PDF)
@@ -143,7 +169,7 @@
         
         <!-- Dekoracyjny element na dole okładki w druku + logo -->
         <div class="absolute bottom-10 w-full text-center opacity-70 text-sm hidden print:block">
-            <img src="GBLogo_oryginalne.png" alt="Fundacja Gwiazda Betlejemska Logo" class="h-16 mx-auto mb-4 header-logo-print">
+            <img src="../wp-content/uploads/2023/05/GBLogo_logo.png" alt="Fundacja Gwiazda Betlejemska Logo" class="h-16 mx-auto mb-4 header-logo-print">
             Fundacja Gwiazda Betlejemska | Oferta Partnerska
         </div>
     </header>
@@ -169,7 +195,7 @@
             </div>
             <div class="relative">
                 <!-- Placeholder na zdjęcie ze spotkania/stołu -->
-                <img src="Kuchnia-Wspolnoty_1-1.png" alt="Wspólny stół" class="rounded-lg shadow-xl w-full object-cover h-80 print:h-64 filter brightness-90">
+                <img src="../wp-content/uploads/2025/11/Kuchnia-Wspolnoty_1-1-768x768.png" alt="Wspólny stół" class="rounded-lg shadow-xl w-full object-cover h-80 print:h-64 filter brightness-90">
                 <div class="absolute -bottom-6 -right-6 bg-white p-6 rounded-lg shadow-lg border-l-4 border-brand-gold hidden md:block print:hidden">
                     <p class="font-serif text-xl font-bold text-brand-dark">150 000 zł</p>
                     <p class="text-sm text-gray-500">Cel zbiórki na kuchnię</p>
@@ -179,7 +205,7 @@
     </section>
 
     <!-- DLACZEGO WARTO (KORZYŚCI B2B) -->
-    <section class="bg-brand-light py-16 px-6 print-padding print-break-inside">
+    <section class="bg-brand-light py-16 px-6 print-padding print-break-inside print-break-before">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-12">
                 <h2 class="font-serif text-3xl font-bold text-brand-dark">Dlaczego warto zostać Partnerem?</h2>
@@ -211,7 +237,7 @@
                         <i class="fas fa-heart"></i>
                     </div>
                     <h3 class="font-bold text-xl mb-3">Wizerunek Lidera</h3>
-                    <p class="text-gray-600 text-sm">Pozycjonuj się jako firma, która dba o wartości rodzinne i integrację społeczną. Twoje logo znajdzie się w sercu naszej fundacji.</p>
+                    <p class="text-gray-600 text-sm">Pozycjonuj się jako firma, która dba o wartości rodzinne i&nbsp;integrację społeczną. Twoje logo znajdzie się w&nbsp;sercu naszej fundacji.</p>
                 </div>
             </div>
         </div>
@@ -285,7 +311,7 @@
     <section class="bg-brand-dark text-white py-16 px-6 print-padding print-break-inside">
         <div class="max-w-4xl mx-auto text-center">
             <span class="text-brand-gold font-bold tracking-widest uppercase text-sm mb-2 block">Alternatywa dla MŚP</span>
-            <h2 class="font-serif text-3xl md:text-4xl font-bold mb-6">Daj Dobro zamiast Kalendarza</h2>
+            <h2 class="font-serif text-3xl md:text-4xl font-bold mb-6">Daj Dobro zamiast kalendarza</h2>
             <p class="text-gray-300 text-lg mb-8 leading-relaxed">
                 Co roku firmy wydają tysiące złotych na gadżety, które lądują w szufladzie. W tym roku zrób coś innego.
                 Przekaż budżet prezentowy na Kuchnię Wspólnoty.
@@ -293,7 +319,7 @@
             
             <div class="bg-white/10 backdrop-blur rounded-xl p-8 border border-white/20 text-left max-w-2xl mx-auto">
                 <h3 class="font-bold text-xl mb-4 text-brand-gold"><i class="far fa-envelope mr-2"></i> Co otrzymasz?</h3>
-                <p class="mb-4">Przygotujemy dla Ciebie piękną, elektroniczną <strong>Kartkę Świąteczną z Twoim logo</strong> i informacją:</p>
+                <p class="mb-4">Przygotujemy dla Ciebie piękną, elektroniczną <strong>Kartkę Świąteczną z Twoim logo</strong> i&nbsp;informacją:</p>
                 <p class="italic text-gray-300 mb-6">"W tym roku, w imieniu naszych Klientów i Pracowników, wsparliśmy budowę Kuchni Wspólnoty Fundacji Gwiazda Betlejemska. Dziękujemy, że razem z nami czynicie dobro."</p>
                 <div class="text-center pt-4 border-t border-white/20">
                     <span class="block text-sm text-gray-400 mb-1">Sugerowana wpłata:</span>
@@ -334,7 +360,7 @@
                 <div class="flex items-center gap-4 mb-8">
                     <!-- Zdjęcie użytkownika -->
                     <div class="w-16 h-16 bg-gray-300 rounded-full overflow-hidden">
-                         <img src="adam_duszynski.jpg" alt="Adam Duszyński" class="w-full h-full object-cover">
+                         <img src="../wp-content/uploads/2025/11/adam_duszynski.jpg" alt="Adam Duszyński" class="w-full h-full object-cover">
                     </div>
                     <div>
                         <p class="font-bold text-lg text-brand-dark">Adam Duszyński</p>
@@ -368,5 +394,14 @@
         <p class="mt-2">Projekt realizowany zgodnie z celami statutowymi Fundacji.</p>
     </footer>
 
+<script>
+    // Skrypt naprawiający błędny viewport tag generowany przez WordPress/Motyw
+    (function() {
+        var viewport = document.querySelector("meta[name=viewport]");
+        if (viewport) {
+            viewport.setAttribute("content", "width=device-width, initial-scale=1.0");
+        }
+    })();
+</script>
 </body>
 </html>
