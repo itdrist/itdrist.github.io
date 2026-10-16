@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Méster Kaszëbsczi Kluczplatë – Trening chùtczégò pisaniô</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .char-correct { color: #15803d; background-color: #dcfce7; border-radius: 2px; }
+    .char-wrong { color: #b91c1c; background-color: #fee2e2; text-decoration: underline; border-radius: 2px; }
+    .char-current { border-bottom: 3px solid #2563eb; background-color: #dbeafe; animation: pulse 1s infinite; }
+    .char-pending { color: #64748b; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    textarea:focus { outline: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans">
+
+  <!-- NAGŁÓWEK -->
+  <header class="bg-indigo-900 text-white shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <span>⌨️</span> Méster Kaszëbsczi Kluczplatë
+        </h1>
+        <p class="text-indigo-200 text-sm">Cwiczenié chùtczégò i akùratnégò pisaniô w jãzëkù kaszëbsczim</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="connectionBadge" class="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
+          Łączenié z bazą...
+        </span>
+        <button onclick="toggleCheatSheet()" class="text-xs bg-indigo-800 hover:bg-indigo-700 px-3 py-2 rounded-lg border border-indigo-600 transition">
+          💡 Pòdpòwédz: Kaszëbskô kluczplata
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- ŚCIĄGAWKA KLAWIATURY KASZUBSKIEJ -->
+    <section id="cheatSheet" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm text-sm">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="font-semibold text-amber-900">Skrótë kaszëbsczi kluczplatë (prawi Alt / AltGr + klawisz):</h2>
+        <button onclick="toggleCheatSheet()" class="text-amber-700 hover:text-amber-900 font-bold">✕</button>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 text-center">
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + q</kbd> → <strong class="text-lg text-indigo-700">ã</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + a</kbd> → <strong class="text-lg text-indigo-700">ą</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + r</kbd> → <strong class="text-lg text-indigo-700">ô</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + w</kbd> → <strong class="text-lg text-indigo-700">ë</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + e</kbd> → <strong class="text-lg text-indigo-700">é</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + i</kbd> → <strong class="text-lg text-indigo-700">ò</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + o</kbd> → <strong class="text-lg text-indigo-700">ó</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + u</kbd> → <strong class="text-lg text-indigo-700">ù</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + l</kbd> → <strong class="text-lg text-indigo-700">ł</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + n</kbd> → <strong class="text-lg text-indigo-700">ń</strong></div>
+        <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + z</kbd> → <strong class="text-lg text-indigo-700">ż</strong></div>
+      </div>
+      <!-- Pasek szybkiego wstawiania znaków dla komputerów bez zainstalowanego układu -->
+      <div class="mt-3 pt-3 border-t border-amber-200 flex flex-wrap items-center gap-2">
+        <span class="text-xs text-amber-800 font-medium">Brak kaszëbsczi kluczplatë? Knãpsnij, żebë wstawic w placu kùrsora:</span>
+        <div id="charButtons" class="flex flex-wrap gap-1"></div>
+      </div>
+    </section>
+
+    <!-- PANEL STATYSTYK NA ŻYWO -->
+    <section class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <div class="text-xs text-slate-500 uppercase font-semibold">Pòkrok</div>
+        <div class="text-2xl font-bold text-indigo-600 mt-1"><span id="statProgress">0</span>%</div>
+        <div class="w-full bg-slate-100 h-2 rounded-full mt-2 overflow-hidden">
+          <div id="progressBar" class="bg-indigo-600 h-full transition-all duration-150" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <div class="text-xs text-slate-500 uppercase font-semibold">Czas pisaniô</div>
+        <div class="text-2xl font-bold text-slate-800 mt-1 font-mono"><span id="statTime">0.0</span> s</div>
+        <div class="text-xs text-slate-400 mt-1">Start òd 1. znakù</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <div class="text-xs text-slate-500 uppercase font-semibold">Chùtkòsc</div>
+        <div class="text-2xl font-bold text-blue-600 mt-1"><span id="statCpm">0</span> <span class="text-sm font-normal">zn./min</span></div>
+        <div class="text-xs text-slate-400 mt-1">CPM</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <div class="text-xs text-slate-500 uppercase font-semibold">Dokładnota</div>
+        <div class="text-2xl font-bold text-emerald-600 mt-1"><span id="statAccuracy">100</span>%</div>
+        <div class="text-xs text-slate-400 mt-1">Akùratnosc</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 col-span-2 sm:col-span-1">
+        <div class="text-xs text-slate-500 uppercase font-semibold">Pùnktë (Jakòsc)</div>
+        <div class="text-2xl font-bold text-purple-600 mt-1" id="statScore">0</div>
+        <div class="text-xs text-slate-400 mt-1">Wedle algòritmù</div>
+      </div>
+    </section>
+
+    <!-- OBSZAR TEKSTU I WPISYWANIA -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold uppercase px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-md" id="textCategory">Kategòriô</span>
+          <span class="text-xs text-slate-400" id="textLengthInfo">Długòsc: 0 znaków</span>
+        </div>
+        <button onclick="drawNewText()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          🔄 Wëlosuj jinszi tekst
+        </button>
+      </div>
+
+      <!-- Wyświetlany tekst do przepisania -->
+      <div id="targetTextContainer" class="text-lg leading-relaxed font-serif bg-slate-50 p-4 rounded-lg border border-slate-200 select-none tracking-wide">
+        Ladowanié tekstu...
+      </div>
+
+      <!-- Pole tekstowe dla studenta -->
+      <div class="relative">
+        <textarea
+          id="typingInput"
+          rows="4"
+          class="w-full p-4 text-lg font-serif bg-white border-2 border-slate-300 focus:border-indigo-600 rounded-lg transition resize-none"
+          placeholder="Zacznij pisac tuwò... Czas wëstartuje aùtomaticzno pò wpisanim pierszégò znakù."
+        ></textarea>
+        <div id="pasteWarning" class="hidden absolute top-2 right-2 bg-red-600 text-white text-xs px-3 py-1.5 rounded shadow">
+          🚫 Wklejiwanié tekstu (Ctrl+V) jest zablokòwóné!
+        </div>
+      </div>
+
+      <!-- Przyciski akcji pod polem -->
+      <div class="flex flex-wrap justify-between items-center gap-4 pt-2">
+        <p class="text-xs text-slate-500">
+          💡 Żebë zapisac wënik na rankingòwi lësce, muszi przepisac <strong>nômni 80%</strong> tekstu.
+        </p>
+        <div class="flex gap-3">
+          <button onclick="resetCurrentTest()" class="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 text-sm font-medium transition">
+            Wëczëszcz i zacznij òd nowa
+          </button>
+          <button id="finishBtn" onclick="finishTest()" disabled class="px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-sm transition">
+            ✅ Zakùńcz i òtaksuj pisanié
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PODSUMOWANIE I ZAPIS WYNIKU (Ukryte do czasu kliknięcia Zakończ) -->
+    <section id="resultModal" class="hidden bg-indigo-50 border-2 border-indigo-200 rounded-xl p-6 shadow-md space-y-4">
+      <div class="flex justify-between items-start">
+        <div>
+          <h2 class="text-xl font-bold text-indigo-950">🎉 Pisanié zakùńczoné! To je Twój wënik:</h2>
+          <p id="resultFeedback" class="text-sm text-indigo-700 mt-1"></p>
+        </div>
+        <span class="text-3xl font-extrabold text-indigo-700 bg-white px-4 py-2 rounded-xl border border-indigo-200 shadow-sm">
+          <span id="finalScore">0</span> pkt
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center bg-white p-4 rounded-lg border border-indigo-100">
+        <div>
+          <div class="text-xs text-slate-400">Czas całkòwiti</div>
+          <div class="font-bold text-lg text-slate-800"><span id="finalTime">0</span> s</div>
+        </div>
+        <div>
+          <div class="text-xs text-slate-400">Chùtkòsc (CPM)</div>
+          <div class="font-bold text-lg text-blue-600"><span id="finalCpm">0</span> zn./min</div>
+        </div>
+        <div>
+          <div class="text-xs text-slate-400">Dokładnota (Levenshtein)</div>
+          <div class="font-bold text-lg text-emerald-600"><span id="finalAccuracy">0</span>%</div>
+        </div>
+        <div>
+          <div class="text-xs text-slate-400">Przepisóné</div>
+          <div class="font-bold text-lg text-slate-800"><span id="finalProgress">0</span>%</div>
+        </div>
+      </div>
+
+      <!-- Formularz zapisu na listę -->
+      <div id="saveFormContainer" class="flex flex-wrap items-center gap-3 pt-2">
+        <input
+          type="text"
+          id="userNick"
+          maxlength="25"
+          placeholder="Wpisz swòjã pòzwa abò miono..."
+          class="flex-1 min-w-[220px] px-4 py-2.5 rounded-lg border border-indigo-300 focus:border-indigo-600 focus:outline-none bg-white"
+        />
+        <button id="saveScoreBtn" onclick="submitScore()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition">
+          🏆 Zapiszë sã karnie nôjlepszich
+        </button>
+      </div>
+      <p id="saveStatusMsg" class="text-sm font-medium hidden"></p>
+    </section>
+
+    <!-- TABELE RANKINGOWE -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <h2 class="text-lg font-bold text-slate-800">📊 Pùblëczné Rankindżi Piszącëch</h2>
+        <button onclick="fetchDataFromBackend()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+          🔄 Òdswiéż wëniczi
+        </button>
+      </div>
+
+      <!-- Zakładki rankingów -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3 mb-4">
+        <button onclick="switchTab('best')" id="tab-best" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white">
+          🏆 Nôlepszi (Top 10)
+        </button>
+        <button onclick="switchTab('fastest')" id="tab-fastest" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">
+          ⚡ Nôchùtszi (Top 10)
+        </button>
+        <button onclick="switchTab('accurate')" id="tab-accurate" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">
+          🎯 Nôdokładniszi (Top 10)
+        </button>
+        <button onclick="switchTab('recent')" id="tab-recent" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">
+          🕒 Òstatné wëniczi (20)
+        </button>
+      </div>
+
+      <!-- Tabela wyników -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-500 uppercase text-xs">
+              <th class="py-3 px-3 w-12">#</th>
+              <th class="py-3 px-3">Pòzwa</th>
+              <th class="py-3 px-3 text-right">Pùnktë (Jakòsc)</th>
+              <th class="py-3 px-3 text-right">Chùtkòsc (CPM)</th>
+              <th class="py-3 px-3 text-right">Dokładnota</th>
+              <th class="py-3 px-3 text-right">Czas</th>
+              <th class="py-3 px-3 text-right">Data i gòdzëna</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody" class="divide-y divide-slate-100">
+            <tr><td colspan="7" class="py-6 text-center text-slate-400">Ni ma jesz zapisónëch wëników. Bądzë pierszô!</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /*************************************************************************
+     * KONFIGURACJA POŁĄCZENIA Z DYSKIEM GOOGLE (GOOGLE APPS SCRIPT)
+     * Wklej poniżej adres URL wdrożonego skryptu Web App z Google Sheets:
+     *************************************************************************/
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhIxWjACSbqOyuzjDQXoUnhfXZsXOPmn8Vre51nBVWV8D0dpy3VtDHmawVBqpnHcA78A/exec";
+
+    // Wbudowana pula tekstów zapasowych (działa od razu, nawet bez podpiętego Arkusza)
+    const FALLBACK_TEXTS = [
+      {
+        id: 1,
+        category: "Ògólowé",
+        text: "Kaszëbskô mòwa to jeden z zachodnosłowiańsczich jãzëków, chtërny rozwinął sã z dôwnëch dialektów pòmòrsczich. Dzysô gôdô nią òkòło sto tësący lëdzy na Pòmòrzu, przede wszëtczim na Kaszëbach. W szkòłach dzece i młodzëzna ùczą sã pisac i czëtac w tim jãzëkù, poznôwającë bògatą kùlturã i historię swòjégò regionu."
+      },
+      {
+        id: 2,
+        category: "Geògrafiô",
+        text: "Kòscérzëna i Kartuzy to wôżné gardë w sercu Kaszëb, òtoczoné lasama i jezorama. Latã przëjéżdżô tuwò wiele turistów, żebë òdpòcząc na łonie nôturë, pływać kajakama i spróbòwac tradicyjnéj kaszëbsczi kùchni. Nôbarżi znóné są tuwò ruchawé lasë nad Bôłtã i Wdzydzczé Mòrze."
+      },
+      {
+        id: 3,
+        category: "Technologiô i edukacjô",
+        text: "Współczesnô technologiô daje wielné mòżlëwòtë dlô rozwijaniô mniészoscowëch jãzëków. Dzãka kòmpùtrowim programóm, słownikóm w internece i kaszëbsczi Wikipedii kòżdi mòże sãgnąc pò wiedzã w rodzëznianim jãzëkù. Wartczé pisanié na klawiaturze pòzwôlô nauczycielóm tworzëc materiałë edukacyjné dlô swòjich ùczniów."
+      },
+      {
+        id: 4,
+        category: "Lëteratura",
+        text: "Hieronim Derdowsczi napisał słôwné słowa: Nie ma Kaszëb bez Pòlonii, a bez Kaszëb Pòlsczi. Jegò epòpeja ò panu Czorlińsczim, co do Pùcka pò sece jachôł, do dzysô bawii czëtińców swòjim hùmòrã i żëwim jãzëkã. To jeden z nôwôżniészich zabëtków kaszëbsczi lëteraturë."
+      }
+    ];
+
+    let textPool = [...FALLBACK_TEXTS];
+    let currentTextObj = null;
+    let startTime = null;
+    let timerInterval = null;
+    let isFinished = false;
+    let lastResult = null;
+    let activeTab = 'best';
+
+    let leaderboards = {
+      best: [],
+      fastest: [],
+      accurate: [],
+      recent: []
+    };
+
+    const isCloudConfigured = () => SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com/");
+
+    // Inicjalizacja aplikacji po załadowaniu strony
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharButtons();
+      setupTypingListeners();
+      fetchDataFromBackend();
+    });
+
+    // Tworzenie przycisków pomocniczych ze znakami kaszubskimi
+    function initCharButtons() {
+      const chars = ['ã', 'ą', 'é', 'ë', 'ł', 'ń', 'ò', 'ó', 'ô', 'ù', 'ż', 'Ã', 'É', 'Ë', 'Ł', 'Ń', 'Ò', 'Ó', 'Ô', 'Ù', 'Ż'];
+      const container = document.getElementById('charButtons');
+      chars.forEach(ch => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = ch;
+        btn.className = 'px-2.5 py-1 bg-white hover:bg-indigo-600 hover:text-white text-slate-800 font-serif font-bold rounded border border-amber-300 text-sm transition shadow-sm';
+        btn.onclick = () => insertCharAtCursor(ch);
+        container.appendChild(btn);
+      });
+    }
+
+    function insertCharAtCursor(ch) {
+      const input = document.getElementById('typingInput');
+      if (input.disabled) return;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const val = input.value;
+      input.value = val.substring(0, start) + ch + val.substring(end);
+      input.selectionStart = input.selectionEnd = start + ch.length;
+      input.focus();
+      handleTyping();
+    }
+
+    function toggleCheatSheet() {
+      const el = document.getElementById('cheatSheet');
+      el.classList.toggle('hidden');
+    }
+
+    // Pobieranie tekstów i wyników z Google Sheets (lub localStorage w trybie Demo)
+    async function fetchDataFromBackend() {
+      const badge = document.getElementById('connectionBadge');
+      if (!isCloudConfigured()) {
+        badge.textContent = "Trib lokalny (Demò – brak URL Google)";
+        badge.className = "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30";
+        loadLocalLeaderboards();
+        if (!currentTextObj) drawNewText();
+        return;
+      }
+
+      try {
+        badge.textContent = "Sënchronizacjô z Google Drive...";
+        const res = await fetch(SCRIPT_URL);
+        const data = await res.json();
+        if (data.texts && data.texts.length > 0) {
+          textPool = data.texts;
+        }
+        if (data.leaderboards) {
+          leaderboards = data.leaderboards;
+          renderLeaderboard();
+        }
+        badge.textContent = "🟢 Pòłączoné z Google Drive";
+        badge.className = "text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30";
+      } catch (err) {
+        console.error("Felënk pòbiéraniô danëch:", err);
+        badge.textContent = "🔴 Felënk pòłączeniô (Trib offline)";
+        loadLocalLeaderboards();
+      }
+
+      if (!currentTextObj) drawNewText();
+    }
+
+    // Losowanie nowego akapitu z puli
+    function drawNewText() {
+      if (textPool.length === 0) textPool = [...FALLBACK_TEXTS];
+      let candidates = textPool;
+      if (textPool.length > 1 && currentTextObj) {
+        candidates = textPool.filter(t => t.text !== currentTextObj.text);
+      }
+      const randomIndex = Math.floor(Math.random() * candidates.length);
+      currentTextObj = candidates[randomIndex];
+      resetCurrentTest();
+    }
+
+    // Resetowanie bieżącego podejścia
+    function resetCurrentTest() {
+      clearInterval(timerInterval);
+      startTime = null;
+      isFinished = false;
+      lastResult = null;
+
+      const input = document.getElementById('typingInput');
+      input.value = '';
+      input.disabled = false;
+
+      document.getElementById('textCategory').textContent = currentTextObj.category || 'Kaszëbskô mòwa';
+      document.getElementById('textLengthInfo').textContent = `Długòsc: ${currentTextObj.text.length} znaków`;
+      document.getElementById('statProgress').textContent = '0';
+      document.getElementById('progressBar').style.width = '0%';
+      document.getElementById('statTime').textContent = '0.0';
+      document.getElementById('statCpm').textContent = '0';
+      document.getElementById('statAccuracy').textContent = '100';
+      document.getElementById('statScore').textContent = '0';
+      document.getElementById('finishBtn').disabled = true;
+      document.getElementById('resultModal').classList.add('hidden');
+      document.getElementById('saveStatusMsg').classList.add('hidden');
+      document.getElementById('saveScoreBtn').disabled = false;
+
+      renderTargetText('');
+    }
+
+    // Renderowanie tekstu wzorcowego z kolorowaniem liter
+    function renderTargetText(typed) {
+      const container = document.getElementById('targetTextContainer');
+      const target = currentTextObj.text;
+      let html = '';
+
+      for (let i = 0; i < target.length; i++) {
+        const char = target[i] === ' ' ? ' ' : escapeHtml(target[i]);
+        if (i < typed.length) {
+          if (typed[i] === target[i]) {
+            html += `<span class="char-correct">${char}</span>`;
+          } else {
+            html += `<span class="char-wrong">${char}</span>`;
+          }
+        } else if (i === typed.length) {
+          html += `<span class="char-current">${char}</span>`;
+        } else {
+          html += `<span class="char-pending">${char}</span>`;
+        }
+      }
+      container.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Nasłuchiwanie wpisywania i blokada wklejania
+    function setupTypingListeners() {
+      const input = document.getElementById('typingInput');
+
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const warn = document.getElementById('pasteWarning');
+        warn.classList.remove('hidden');
+        setTimeout(() => warn.classList.add('hidden'), 2500);
+      });
+
+      input.addEventListener('input', handleTyping);
+    }
+
+    function handleTyping() {
+      if (isFinished || !currentTextObj) return;
+      const input = document.getElementById('typingInput');
+      const typed = input.value;
+
+      // Start licznika czasu przy pierwszym znaku
+      if (!startTime && typed.length > 0) {
+        startTime = performance.now();
+        timerInterval = setInterval(updateLiveMetrics, 100);
+        document.getElementById('finishBtn').disabled = false;
+      }
+
+      renderTargetText(typed);
+      updateLiveMetrics();
+    }
+
+    // Obliczanie odległości edycyjnej Levenshteina
+    function levenshteinDistance(a, b) {
+      const m = a.length;
+      const n = b.length;
+      const dp = Array.from({ length: m + 1 }, () => new Int32Array(n + 1));
+
+      for (let i = 0; i <= m; i++) dp[i][0] = i;
+      for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(
+            dp[i - 1][j] + 1,      // usunięcie
+            dp[i][j - 1] + 1,      // wstawienie
+            dp[i - 1][j - 1] + cost // zamiana
+          );
+        }
+      }
+      return dp[m][n];
+    }
+
+    // Aktualizacja wskaźników na żywo podczas pisania
+    function updateLiveMetrics() {
+      if (!startTime || isFinished) return;
+
+      const typed = document.getElementById('typingInput').value;
+      const target = currentTextObj.text;
+      const elapsedSec = Math.max(0.5, (performance.now() - startTime) / 1000);
+
+      // 1. Postęp (%)
+      const progress = Math.min(100, Math.round((typed.length / target.length) * 100));
+
+      // 2. Szybkość CPM (znaki na minutę)
+      const cpm = Math.round((typed.length / elapsedSec) * 60);
+
+      // 3. Dokładność na żywo (względem dotychczas wpisanego fragmentu)
+      const targetSlice = target.slice(0, typed.length);
+      const dist = levenshteinDistance(typed, targetSlice);
+      const maxLen = Math.max(1, typed.length);
+      const liveAccuracy = Math.max(0, Math.round(((maxLen - dist) / maxLen) * 1000) / 10);
+
+      // 4. Punkty wg algorytmu: CPM * (Dokładność/100)^3
+      const score = Math.round(cpm * Math.pow(liveAccuracy / 100, 3));
+
+      document.getElementById('statProgress').textContent = progress;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+      document.getElementById('statTime').textContent = elapsedSec.toFixed(1);
+      document.getElementById('statCpm').textContent = cpm;
+      document.getElementById('statAccuracy').textContent = liveAccuracy.toFixed(1);
+      document.getElementById('statScore').textContent = score;
+    }
+
+    // Zakończenie pisania (po kliknięciu przycisku)
+    function finishTest() {
+      if (!startTime || isFinished) return;
+      clearInterval(timerInterval);
+      isFinished = true;
+
+      const input = document.getElementById('typingInput');
+      input.disabled = true;
+      document.getElementById('finishBtn').disabled = true;
+
+      const typed = input.value;
+      const target = currentTextObj.text;
+      const elapsedSec = Math.max(1, Math.round(((performance.now() - startTime) / 1000) * 10) / 10);
+
+      const progress = Math.min(100, Math.round((typed.length / target.length) * 100));
+      const cpm = Math.round((typed.length / elapsedSec) * 60);
+
+      // Końcowa dokładność liczona względem docelowego fragmentu (lub całości, jeśli ukończono >= 80%)
+      const referenceText = progress >= 100 ? target : target.slice(0, Math.max(typed.length, Math.floor(target.length * 0.8)));
+      const dist = levenshteinDistance(typed, referenceText);
+      const maxLen = Math.max(1, referenceText.length, typed.length);
+      const accuracy = Math.max(0, Math.round(((maxLen - dist) / maxLen) * 1000) / 10);
+
+      // Wynik punktowy skorygowany o stopień ukończenia tekstu
+      const completionFactor = Math.min(1, typed.length / target.length);
+      const finalScore = Math.round(cpm * Math.pow(accuracy / 100, 3) * completionFactor);
+
+      lastResult = {
+        score: finalScore,
+        cpm: cpm,
+        accuracy: accuracy,
+        timeSec: elapsedSec,
+        progress: progress,
+        textId: currentTextObj.id
+      };
+
+      // Wyświetlenie modalu podsumowania
+      document.getElementById('finalScore').textContent = finalScore;
+      document.getElementById('finalTime').textContent = elapsedSec;
+      document.getElementById('finalCpm').textContent = cpm;
+      document.getElementById('finalAccuracy').textContent = accuracy;
+      document.getElementById('finalProgress').textContent = progress;
+
+      const saveForm = document.getElementById('saveFormContainer');
+      const feedback = document.getElementById('resultFeedback');
+
+      if (progress < 80) {
+        saveForm.classList.add('hidden');
+        feedback.textContent = `⚠️ Môśz przepisóné blós ${progress}% tekstu. Żebë zapisac wënik w pùblëcznym rankingù, mùszi miec nômni 80% pòkrokù.`;
+        feedback.className = "text-sm text-red-600 font-medium mt-1";
+      } else {
+        saveForm.classList.remove('hidden');
+        feedback.textContent = "Bëlnô robòta! Wpisz swòjã pòzwã niżi, żebë zapisac swój wënik w karnie nôjlepszich.";
+        feedback.className = "text-sm text-indigo-700 mt-1";
+      }
+
+      document.getElementById('resultModal').classList.remove('hidden');
+      document.getElementById('userNick').focus();
+    }
+
+    // Zapisywanie wyniku (do Google Sheets lub localStorage w trybie Demo)
+    async function submitScore() {
+      if (!lastResult) return;
+      const nickInput = document.getElementById('userNick');
+      const nick = nickInput.value.trim();
+
+      if (!nick) {
+        alert("Proszã wpisac swòjã pòzwã abò miono przed zapisanim wënikù!");
+        nickInput.focus();
+        return;
+      }
+
+      const btn = document.getElementById('saveScoreBtn');
+      const statusMsg = document.getElementById('saveStatusMsg');
+      btn.disabled = true;
+      statusMsg.classList.remove('hidden');
+      statusMsg.textContent = "⏳ Zapisywanié wënikù na lësce...";
+      statusMsg.className = "text-sm font-medium text-indigo-700";
+
+      const payload = {
+        nick: nick,
+        ...lastResult
+      };
+
+      if (!isCloudConfigured()) {
+        // Zapis lokalny w przeglądarce (Tryb Demo)
+        saveScoreLocally(payload);
+        statusMsg.textContent = "✅ Wënik zapisóny lokalno (w przeglądarce). Pòdłącz Google Sheets, żebë wëspółdzelëc rankindżi!";
+        statusMsg.className = "text-sm font-medium text-emerald-700";
+        return;
+      }
+
+      try {
+        // Używamy text/plain, aby uniknąć błędu CORS preflight w Google Apps Script
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const resData = await response.json();
+
+        if (resData.status === 'ok' && resData.data && resData.data.leaderboards) {
+          leaderboards = resData.data.leaderboards;
+          renderLeaderboard();
+          statusMsg.textContent = "✅ Wënik òstôł zapisóny na pùblëczny lësce!";
+          statusMsg.className = "text-sm font-medium text-emerald-700";
+        } else {
+          throw new Error(resData.message || 'Nieznónô fela zôpisu');
+        }
+      } catch (err) {
+        console.error(err);
+        statusMsg.textContent = "❌ Wëstąpiła fela òb czas zôpisu do Arkusza Google.";
+        statusMsg.className = "text-sm font-medium text-red-600";
+        btn.disabled = false;
+      }
+    }
+
+    // Obsługa rankingów lokalnych (gdy nauczyciel testuje plik bez podpiętego Google)
+    function loadLocalLeaderboards() {
+      const raw = localStorage.getItem('kaszuby_typing_scores');
+      const allScores = raw ? JSON.parse(raw) : [];
+      computeLocalLeaderboards(allScores);
+      renderLeaderboard();
+    }
+
+    function saveScoreLocally(payload) {
+      const raw = localStorage.getItem('kaszuby_typing_scores');
+      const allScores = raw ? JSON.parse(raw) : [];
+      const nowStr = new Date().toLocaleString('sv-SE'); // format YYYY-MM-DD HH:mm:ss
+
+      allScores.push({
+        date: nowStr,
+        ...payload
+      });
+      localStorage.setItem('kaszuby_typing_scores', JSON.stringify(allScores));
+      computeLocalLeaderboards(allScores);
+      renderLeaderboard();
+    }
+
+    function computeLocalLeaderboards(allScores) {
+      leaderboards.best = [...allScores].sort((a, b) => b.score - a.score || b.cpm - a.cpm).slice(0, 10);
+      leaderboards.fastest = [...allScores].filter(s => s.accuracy >= 85).sort((a, b) => b.cpm - a.cpm || b.accuracy - a.accuracy).slice(0, 10);
+      leaderboards.accurate = [...allScores].sort((a, b) => b.accuracy - a.accuracy || b.cpm - a.cpm).slice(0, 10);
+      leaderboards.recent = [...allScores].reverse().slice(0, 20);
+    }
+
+    // Przełączanie zakładek rankingów
+    function switchTab(tabName) {
+      activeTab = tabName;
+      const tabs = ['best', 'fastest', 'accurate', 'recent'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tabName) {
+          btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white";
+        } else {
+          btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200";
+        }
+      });
+      renderLeaderboard();
+    }
+
+    // Renderowanie tabeli wybranego rankingu
+    function renderLeaderboard() {
+      const tbody = document.getElementById('leaderboardBody');
+      const list = leaderboards[activeTab] || [];
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">Ni ma zapisónëch wëników w ti kategòrie.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((row, idx) => {
+        const medal = idx === 0 && activeTab !== 'recent' ? '🥇' : idx === 1 && activeTab !== 'recent' ? '🥈' : idx === 2 && activeTab !== 'recent' ? '🥉' : `${idx + 1}.`;
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-3 font-bold text-slate-600">${medal}</td>
+            <td class="py-3 px-3 font-semibold text-slate-900">${escapeHtml(row.nick)}</td>
+            <td class="py-3 px-3 text-right font-bold text-purple-700">${row.score} pkt</td>
+            <td class="py-3 px-3 text-right font-medium text-blue-600">${row.cpm} zn./min</td>
+            <td class="py-3 px-3 text-right font-medium text-emerald-600">${Number(row.accuracy).toFixed(1)}%</td>
+            <td class="py-3 px-3 text-right text-slate-500">${Number(row.timeSec).toFixed(1)} s</td>
+            <td class="py-3 px-3 text-right text-xs text-slate-400 font-mono">${escapeHtml(row.date)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
