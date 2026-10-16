@@ -35,7 +35,7 @@
         <p class="text-indigo-200 text-sm">Cwiczenié chùtczégò i akùratnégò pisaniô w jãzëkù kaszëbsczim</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <span id="connectionBadge" class="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
+        <span id="connectionBadge" class="inline-flex items-center justify-center w-[270px] text-center whitespace-nowrap text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
           Łączenié z bazą...
         </span>
         <button onclick="openLiveDashboard()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-2 rounded-lg border border-emerald-400/40 shadow-sm transition flex items-center gap-1.5">
@@ -54,7 +54,7 @@
     <section id="cheatSheet" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm text-sm">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-semibold text-amber-900">Skrótë kaszëbsczi kluczplatë (prawi Alt / AltGr + klawisz):</h2>
-        <button onclick="toggleCheatSheet()" class="text-amber-700 hover:bg-amber-900 font-bold">✕</button>
+        <button onclick="toggleCheatSheet()" class="text-amber-700 hover:text-amber-900 font-bold">✕</button>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 text-center">
         <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + q</kbd> → <strong class="text-lg text-indigo-700">ã</strong></div>
@@ -271,7 +271,7 @@
 
       <!-- Przełączniki widoku i sterowanie odświeżaniem -->
       <div class="flex flex-wrap items-center gap-2">
-        <span id="liveConnectionBadge" class="text-xs px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
+        <span id="liveConnectionBadge" class="inline-flex items-center justify-center w-[270px] text-center whitespace-nowrap text-xs px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
           Łączenié z bazą...
         </span>
 
@@ -292,14 +292,14 @@
           <button onclick="setLiveMode('recent')" id="live-btn-recent" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition">
             🕒 Òstatné wëniczi (20)
           </button>
-          <button onclick="toggleLiveCarousel()" id="live-btn-carousel" class="px-3 py-1.5 rounded-lg text-sm font-bold text-slate-300 hover:text-white transition">
+          <button onclick="toggleLiveCarousel()" id="live-btn-carousel" class="inline-flex items-center justify-center w-10 py-1.5 rounded-lg text-sm font-bold text-slate-300 hover:text-white transition">
             ▶️
           </button>
         </div>
 
         <button onclick="manualLiveRefresh()" class="text-sm bg-indigo-800 hover:bg-indigo-700 text-white font-semibold px-3.5 py-2 rounded-xl border border-indigo-600 transition flex items-center gap-1.5">
           <span>🔄 Òdswiéż wëniczi</span>
-          <span class="text-xs font-mono bg-indigo-950 px-2 py-0.5 rounded text-indigo-200"><span id="liveCountdown">10</span> s</span>
+          <span class="inline-flex items-center justify-center w-12 text-center text-xs font-mono tabular-nums bg-indigo-950 py-0.5 rounded text-indigo-200"><span id="liveCountdown">10</span>&nbsp;s</span>
         </button>
 
         <button onclick="toggleFullScreen()" class="text-lg bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-700 transition">
@@ -438,16 +438,17 @@
       el.classList.toggle('hidden');
     }
 
-    function syncConnectionBadges(text, className) {
+    function syncConnectionBadges(text, colorClasses) {
+      const baseClasses = "inline-flex items-center justify-center w-[270px] text-center whitespace-nowrap text-xs px-3 rounded-full border";
       const badge = document.getElementById('connectionBadge');
       const liveBadge = document.getElementById('liveConnectionBadge');
       if (badge) {
         badge.textContent = text;
-        badge.className = className;
+        badge.className = `${baseClasses} py-1 ${colorClasses}`;
       }
       if (liveBadge) {
         liveBadge.textContent = text;
-        liveBadge.className = className;
+        liveBadge.className = `${baseClasses} py-1.5 ${colorClasses}`;
       }
     }
 
@@ -478,7 +479,7 @@
       if (!isCloudConfigured()) {
         syncConnectionBadges(
           "Trib lokalny (Demò – brak URL Google)",
-          "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30"
+          "bg-amber-500/20 text-amber-200 border-amber-400/30"
         );
         loadLocalLeaderboards();
         if (!currentTextObj) drawNewText();
@@ -488,7 +489,7 @@
       try {
         syncConnectionBadges(
           "Sënchronizacjô z Google Drive...",
-          "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30"
+          "bg-amber-500/20 text-amber-200 border-amber-400/30"
         );
         const res = await fetch(SCRIPT_URL);
         const data = await res.json();
@@ -503,13 +504,13 @@
         }
         syncConnectionBadges(
           "🟢 Pòłączoné z Google Drive",
-          "text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30"
+          "bg-emerald-500/20 text-emerald-200 border-emerald-400/30"
         );
       } catch (err) {
         console.error("Felënk pòbiéraniô danëch:", err);
         syncConnectionBadges(
           "🔴 Felënk pòłączeniô (Trib offline)",
-          "text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-200 border border-red-400/30"
+          "bg-red-500/20 text-red-200 border-red-400/30"
         );
         loadLocalLeaderboards();
       }
@@ -948,7 +949,7 @@
         liveCarouselActive = true;
         const btn = document.getElementById('live-btn-carousel');
         btn.textContent = '⏸️';
-        btn.className = "px-3 py-1.5 rounded-lg text-sm font-bold bg-emerald-600 text-white transition";
+        btn.className = "inline-flex items-center justify-center w-10 py-1.5 rounded-lg text-sm font-bold bg-emerald-600 text-white transition";
         const order = ['best', 'fastest', 'accurate', 'recent'];
         let idx = order.indexOf(liveMode);
         if (idx === -1) {
@@ -971,7 +972,7 @@
       const btn = document.getElementById('live-btn-carousel');
       if (btn) {
         btn.textContent = '▶️';
-        btn.className = "px-3 py-1.5 rounded-lg text-sm font-bold text-slate-300 hover:text-white transition";
+        btn.className = "inline-flex items-center justify-center w-10 py-1.5 rounded-lg text-sm font-bold text-slate-300 hover:text-white transition";
       }
     }
 
