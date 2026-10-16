@@ -12,6 +12,14 @@
     .char-current { border-bottom: 3px solid #2563eb; background-color: #dbeafe; animation: pulse 1s infinite; }
     .char-pending { color: #64748b; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes newRowGlow {
+      0% { background-color: rgba(16, 185, 129, 0.45); transform: scale(1.01); }
+      50% { background-color: rgba(16, 185, 129, 0.25); }
+      100% { background-color: transparent; transform: scale(1); }
+    }
+    .row-new-highlight {
+      animation: newRowGlow 3.5s ease-out forwards;
+    }
     textarea:focus { outline: none; }
   </style>
 </head>
@@ -26,10 +34,13 @@
         </h1>
         <p class="text-indigo-200 text-sm">Cwiczenié chùtczégò i akùratnégò pisaniô w jãzëkù kaszëbsczim</p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-2">
         <span id="connectionBadge" class="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
           Łączenié z bazą...
         </span>
+        <button onclick="openLiveDashboard()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-2 rounded-lg border border-emerald-400/40 shadow-sm transition flex items-center gap-1.5">
+          <span>🖥️</span> 📊
+        </button>
         <button onclick="toggleCheatSheet()" class="text-xs bg-indigo-800 hover:bg-indigo-700 px-3 py-2 rounded-lg border border-indigo-600 transition">
           💡 Pòdpòwédz: Kaszëbskô kluczplata
         </button>
@@ -43,7 +54,7 @@
     <section id="cheatSheet" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm text-sm">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-semibold text-amber-900">Skrótë kaszëbsczi kluczplatë (prawi Alt / AltGr + klawisz):</h2>
-        <button onclick="toggleCheatSheet()" class="text-amber-700 hover:text-amber-900 font-bold">✕</button>
+        <button onclick="toggleCheatSheet()" class="text-amber-700 hover:bg-amber-900 font-bold">✕</button>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 text-center">
         <div class="bg-white p-2 rounded border border-amber-200"><kbd class="font-mono text-xs bg-slate-100 px-1 rounded">AltGr + q</kbd> → <strong class="text-lg text-indigo-700">ã</strong></div>
@@ -193,9 +204,14 @@
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
         <h2 class="text-lg font-bold text-slate-800">📊 Pùblëczné Rankindżi Piszącëch</h2>
-        <button onclick="fetchDataFromBackend()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
-          🔄 Òdswiéż wëniczi
-        </button>
+        <div class="flex items-center gap-3">
+          <button onclick="fetchDataFromBackend()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+            🔄 Òdswiéż wëniczi
+          </button>
+          <button onclick="openLiveDashboard()" class="text-xs bg-slate-100 hover:bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-1.5 rounded-lg font-medium flex items-center gap-1 transition">
+            🖥️ ⛶
+          </button>
+        </div>
       </div>
 
       <!-- Zakładki rankingów -->
@@ -236,6 +252,68 @@
     </section>
 
   </main>
+
+  <!-- WIDOK TABLICY WYNIKÓW NA ŻYWO (LIVE DASHBOARD POD PROJEKTOR) -->
+  <div id="liveDashboard" class="hidden fixed inset-0 z-50 bg-slate-950 text-white flex flex-col overflow-hidden select-none">
+    <!-- Górny pasek projektora -->
+    <div class="bg-indigo-950/90 border-b border-indigo-800/60 px-6 py-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
+      <div class="flex items-center gap-4">
+        <span class="text-4xl">⌨️</span>
+        <div>
+          <div class="flex items-center gap-3">
+            <h2 class="text-2xl font-extrabold tracking-tight text-white">Méster Kaszëbsczi Kluczplatë</h2>
+            <span class="text-indigo-400">•</span>
+            <span class="text-xl font-bold text-emerald-400">📊 Pùblëczné Rankindżi Piszącëch</span>
+          </div>
+          <p class="text-indigo-300 text-sm">Cwiczenié chùtczégò i akùratnégò pisaniô w jãzëkù kaszëbsczim</p>
+        </div>
+      </div>
+
+      <!-- Przełączniki widoku i sterowanie odświeżaniem -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span id="liveConnectionBadge" class="text-xs px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30">
+          Łączenié z bazą...
+        </span>
+
+        <!-- Przyciski wyboru układu na projektorze -->
+        <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700">
+          <button onclick="setLiveMode('grid')" id="live-btn-grid" class="px-3 py-1.5 rounded-lg text-sm font-bold bg-indigo-600 text-white transition">
+            ⊞
+          </button>
+          <button onclick="setLiveMode('best')" id="live-btn-best" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition">
+            🏆 Nôlepszi (Top 10)
+          </button>
+          <button onclick="setLiveMode('fastest')" id="live-btn-fastest" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition">
+            ⚡ Nôchùtszi (Top 10)
+          </button>
+          <button onclick="setLiveMode('accurate')" id="live-btn-accurate" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition">
+            🎯 Nôdokładniszi (Top 10)
+          </button>
+          <button onclick="setLiveMode('recent')" id="live-btn-recent" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition">
+            🕒 Òstatné wëniczi (20)
+          </button>
+          <button onclick="toggleLiveCarousel()" id="live-btn-carousel" class="px-3 py-1.5 rounded-lg text-sm font-bold text-slate-300 hover:text-white transition">
+            ▶️
+          </button>
+        </div>
+
+        <button onclick="manualLiveRefresh()" class="text-sm bg-indigo-800 hover:bg-indigo-700 text-white font-semibold px-3.5 py-2 rounded-xl border border-indigo-600 transition flex items-center gap-1.5">
+          <span>🔄 Òdswiéż wëniczi</span>
+          <span class="text-xs font-mono bg-indigo-950 px-2 py-0.5 rounded text-indigo-200"><span id="liveCountdown">10</span> s</span>
+        </button>
+
+        <button onclick="toggleFullScreen()" class="text-lg bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-700 transition">
+          ⛶
+        </button>
+        <button onclick="closeLiveDashboard()" class="text-lg bg-red-900/60 hover:bg-red-700 text-red-100 px-3.5 py-1.5 rounded-xl border border-red-700/60 font-bold transition">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Główny obszar tabel na projektorze -->
+    <div id="liveContentArea" class="flex-1 p-6 overflow-y-auto"></div>
+  </div>
 
   <script>
     /*************************************************************************
@@ -283,6 +361,24 @@
       recent: []
     };
 
+    // Stan widoku Live Dashboard (Projektor)
+    let isLiveOpen = false;
+    let liveMode = 'grid'; // 'grid' | 'best' | 'fastest' | 'accurate' | 'recent'
+    let liveCarouselActive = false;
+    let liveCarouselTimer = null;
+    let liveRefreshTimer = null;
+    let liveSecondsLeft = 10;
+    let knownResultKeys = new Set();
+    let newlyAddedKeys = new Set();
+    let isFirstLoad = true;
+
+    const BOARD_TITLES = {
+      best: "🏆 Nôlepszi (Top 10)",
+      fastest: "⚡ Nôchùtszi (Top 10)",
+      accurate: "🎯 Nôdokładniszi (Top 10)",
+      recent: "🕒 Òstatné wëniczi (20)"
+    };
+
     const isCloudConfigured = () => SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com/");
 
     // Inicjalizacja aplikacji po załadowaniu strony
@@ -290,6 +386,25 @@
       initCharButtons();
       setupTypingListeners();
       fetchDataFromBackend();
+
+      // Automatyczne otwarcie Live Dashboard jeśli adres zawiera #live lub ?live=1
+      if (window.location.hash === '#live' || new URLSearchParams(window.location.search).get('live') === '1') {
+        openLiveDashboard();
+      }
+
+      // Nasłuchiwanie zmian w localStorage (przydatne w trybie lokalnym między kartami)
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'kaszuby_typing_scores') {
+          loadLocalLeaderboards();
+        }
+      });
+
+      // Skrót klawiszowy Esc do zamykania Live Dashboard
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isLiveOpen) {
+          closeLiveDashboard();
+        }
+      });
     });
 
     // Tworzenie przycisków pomocniczych ze znakami kaszubskimi
@@ -323,33 +438,79 @@
       el.classList.toggle('hidden');
     }
 
+    function syncConnectionBadges(text, className) {
+      const badge = document.getElementById('connectionBadge');
+      const liveBadge = document.getElementById('liveConnectionBadge');
+      if (badge) {
+        badge.textContent = text;
+        badge.className = className;
+      }
+      if (liveBadge) {
+        liveBadge.textContent = text;
+        liveBadge.className = className;
+      }
+    }
+
+    function makeRowKey(row) {
+      return `${row.nick || ''}|${row.score}|${row.cpm}|${row.accuracy}|${row.timeSec}|${row.date || ''}`;
+    }
+
+    function trackNewResults(newBoards) {
+      const currentKeys = new Set();
+      newlyAddedKeys.clear();
+
+      ['best', 'fastest', 'accurate', 'recent'].forEach(cat => {
+        (newBoards[cat] || []).forEach(row => {
+          const key = makeRowKey(row);
+          currentKeys.add(key);
+          if (!isFirstLoad && !knownResultKeys.has(key)) {
+            newlyAddedKeys.add(key);
+          }
+        });
+      });
+
+      knownResultKeys = currentKeys;
+      isFirstLoad = false;
+    }
+
     // Pobieranie tekstów i wyników z Google Sheets (lub localStorage w trybie Demo)
     async function fetchDataFromBackend() {
-      const badge = document.getElementById('connectionBadge');
       if (!isCloudConfigured()) {
-        badge.textContent = "Trib lokalny (Demò – brak URL Google)";
-        badge.className = "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30";
+        syncConnectionBadges(
+          "Trib lokalny (Demò – brak URL Google)",
+          "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30"
+        );
         loadLocalLeaderboards();
         if (!currentTextObj) drawNewText();
         return;
       }
 
       try {
-        badge.textContent = "Sënchronizacjô z Google Drive...";
+        syncConnectionBadges(
+          "Sënchronizacjô z Google Drive...",
+          "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30"
+        );
         const res = await fetch(SCRIPT_URL);
         const data = await res.json();
         if (data.texts && data.texts.length > 0) {
           textPool = data.texts;
         }
         if (data.leaderboards) {
+          trackNewResults(data.leaderboards);
           leaderboards = data.leaderboards;
           renderLeaderboard();
+          if (isLiveOpen) renderLiveDashboard();
         }
-        badge.textContent = "🟢 Pòłączoné z Google Drive";
-        badge.className = "text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30";
+        syncConnectionBadges(
+          "🟢 Pòłączoné z Google Drive",
+          "text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30"
+        );
       } catch (err) {
         console.error("Felënk pòbiéraniô danëch:", err);
-        badge.textContent = "🔴 Felënk pòłączeniô (Trib offline)";
+        syncConnectionBadges(
+          "🔴 Felënk pòłączeniô (Trib offline)",
+          "text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-200 border border-red-400/30"
+        );
         loadLocalLeaderboards();
       }
 
@@ -419,7 +580,7 @@
     }
 
     function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      return String(str ?? '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
     // Nasłuchiwanie wpisywania i blokada wklejania
@@ -607,8 +768,10 @@
         const resData = await response.json();
 
         if (resData.status === 'ok' && resData.data && resData.data.leaderboards) {
+          trackNewResults(resData.data.leaderboards);
           leaderboards = resData.data.leaderboards;
           renderLeaderboard();
+          if (isLiveOpen) renderLiveDashboard();
           statusMsg.textContent = "✅ Wënik òstôł zapisóny na pùblëczny lësce!";
           statusMsg.className = "text-sm font-medium text-emerald-700";
         } else {
@@ -628,6 +791,7 @@
       const allScores = raw ? JSON.parse(raw) : [];
       computeLocalLeaderboards(allScores);
       renderLeaderboard();
+      if (isLiveOpen) renderLiveDashboard();
     }
 
     function saveScoreLocally(payload) {
@@ -642,13 +806,18 @@
       localStorage.setItem('kaszuby_typing_scores', JSON.stringify(allScores));
       computeLocalLeaderboards(allScores);
       renderLeaderboard();
+      if (isLiveOpen) renderLiveDashboard();
     }
 
     function computeLocalLeaderboards(allScores) {
-      leaderboards.best = [...allScores].sort((a, b) => b.score - a.score || b.cpm - a.cpm).slice(0, 10);
-      leaderboards.fastest = [...allScores].filter(s => s.accuracy >= 85).sort((a, b) => b.cpm - a.cpm || b.accuracy - a.accuracy).slice(0, 10);
-      leaderboards.accurate = [...allScores].sort((a, b) => b.accuracy - a.accuracy || b.cpm - a.cpm).slice(0, 10);
-      leaderboards.recent = [...allScores].reverse().slice(0, 20);
+      const computed = {
+        best: [...allScores].sort((a, b) => b.score - a.score || b.cpm - a.cpm).slice(0, 10),
+        fastest: [...allScores].filter(s => s.accuracy >= 85).sort((a, b) => b.cpm - a.cpm || b.accuracy - a.accuracy).slice(0, 10),
+        accurate: [...allScores].sort((a, b) => b.accuracy - a.accuracy || b.cpm - a.cpm).slice(0, 10),
+        recent: [...allScores].reverse().slice(0, 20)
+      };
+      trackNewResults(computed);
+      leaderboards = computed;
     }
 
     // Przełączanie zakładek rankingów
@@ -690,6 +859,209 @@
           </tr>
         `;
       }).join('');
+    }
+
+    /*************************************************************************
+     * OBSŁUGA LIVE DASHBOARD (WIDOK PROJEKTORA NA ŻYWO)
+     *************************************************************************/
+    function openLiveDashboard() {
+      isLiveOpen = true;
+      document.getElementById('liveDashboard').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      renderLiveDashboard();
+      startLivePolling();
+    }
+
+    function closeLiveDashboard() {
+      isLiveOpen = false;
+      document.getElementById('liveDashboard').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+      stopLivePolling();
+      stopLiveCarousel();
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      if (window.location.hash === '#live') {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function startLivePolling() {
+      stopLivePolling();
+      liveSecondsLeft = 10;
+      document.getElementById('liveCountdown').textContent = liveSecondsLeft;
+      liveRefreshTimer = setInterval(() => {
+        liveSecondsLeft--;
+        if (liveSecondsLeft <= 0) {
+          liveSecondsLeft = 10;
+          fetchDataFromBackend();
+        }
+        const el = document.getElementById('liveCountdown');
+        if (el) el.textContent = liveSecondsLeft;
+      }, 1000);
+    }
+
+    function stopLivePolling() {
+      if (liveRefreshTimer) {
+        clearInterval(liveRefreshTimer);
+        liveRefreshTimer = null;
+      }
+    }
+
+    function manualLiveRefresh() {
+      liveSecondsLeft = 10;
+      const el = document.getElementById('liveCountdown');
+      if (el) el.textContent = liveSecondsLeft;
+      fetchDataFromBackend();
+    }
+
+    function setLiveMode(mode, fromCarousel = false) {
+      if (!fromCarousel && liveCarouselActive) {
+        stopLiveCarousel();
+      }
+      liveMode = mode;
+      const modes = ['grid', 'best', 'fastest', 'accurate', 'recent'];
+      modes.forEach(m => {
+        const btn = document.getElementById(`live-btn-${m}`);
+        if (!btn) return;
+        if (m === mode) {
+          btn.className = "px-3 py-1.5 rounded-lg text-sm font-bold bg-indigo-600 text-white transition";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition";
+        }
+      });
+      renderLiveDashboard();
+    }
+
+    function toggleLiveCarousel() {
+      if (liveCarouselActive) {
+        stopLiveCarousel();
+      } else {
+        liveCarouselActive = true;
+        const btn = document.getElementById('live-btn-carousel');
+        btn.textContent = '⏸️';
+        btn.className = "px-3 py-1.5 rounded-lg text-sm font-bold bg-emerald-600 text-white transition";
+        const order = ['best', 'fastest', 'accurate', 'recent'];
+        let idx = order.indexOf(liveMode);
+        if (idx === -1) {
+          idx = 0;
+          setLiveMode(order[0], true);
+        }
+        liveCarouselTimer = setInterval(() => {
+          idx = (idx + 1) % order.length;
+          setLiveMode(order[idx], true);
+        }, 8000);
+      }
+    }
+
+    function stopLiveCarousel() {
+      liveCarouselActive = false;
+      if (liveCarouselTimer) {
+        clearInterval(liveCarouselTimer);
+        liveCarouselTimer = null;
+      }
+      const btn = document.getElementById('live-btn-carousel');
+      if (btn) {
+        btn.textContent = '▶️';
+        btn.className = "px-3 py-1.5 rounded-lg text-sm font-bold text-slate-300 hover:text-white transition";
+      }
+    }
+
+    function buildLiveTableCard(catKey, isLarge) {
+      const list = leaderboards[catKey] || [];
+      const limit = isLarge ? (catKey === 'recent' ? 20 : 10) : 8;
+      const rows = list.slice(0, limit);
+      const title = BOARD_TITLES[catKey];
+
+      const headerAccent =
+        catKey === 'best' ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' :
+        catKey === 'fastest' ? 'border-blue-500/40 bg-blue-500/10 text-blue-300' :
+        catKey === 'accurate' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
+        'border-purple-500/40 bg-purple-500/10 text-purple-300';
+
+      const textSize = isLarge ? 'text-lg' : 'text-sm';
+      const cellPad = isLarge ? 'py-3.5 px-4' : 'py-2 px-3';
+
+      let bodyHtml = '';
+      if (rows.length === 0) {
+        bodyHtml = `<tr><td colspan="7" class="py-8 text-center text-slate-500 ${textSize}">Ni ma zapisónëch wëników w ti kategòrie.</td></tr>`;
+      } else {
+        bodyHtml = rows.map((row, idx) => {
+          const medal = idx === 0 && catKey !== 'recent' ? '🥇' : idx === 1 && catKey !== 'recent' ? '🥈' : idx === 2 && catKey !== 'recent' ? '🥉' : `${idx + 1}.`;
+          const isNew = newlyAddedKeys.has(makeRowKey(row));
+          const highlightClass = isNew ? 'row-new-highlight' : '';
+          const topRowStyle = idx === 0 && catKey !== 'recent' ? 'bg-amber-500/10' : '';
+
+          return `
+            <tr class="border-b border-slate-800/80 hover:bg-slate-800/50 transition ${topRowStyle} ${highlightClass}">
+              <td class="${cellPad} font-bold text-slate-300">${medal}</td>
+              <td class="${cellPad} font-bold text-white truncate max-w-[200px]">${escapeHtml(row.nick)}</td>
+              <td class="${cellPad} text-right font-extrabold text-purple-300">${row.score} pkt</td>
+              <td class="${cellPad} text-right font-semibold text-blue-300">${row.cpm} zn./min</td>
+              <td class="${cellPad} text-right font-semibold text-emerald-300">${Number(row.accuracy).toFixed(1)}%</td>
+              <td class="${cellPad} text-right text-slate-300 font-mono">${Number(row.timeSec).toFixed(1)} s</td>
+              <td class="${cellPad} text-right text-xs text-slate-400 font-mono">${escapeHtml(row.date)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      return `
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl overflow-hidden flex flex-col">
+          <div onclick="setLiveMode('${catKey === liveMode ? 'grid' : catKey}')" class="px-5 py-3.5 border-b ${headerAccent} flex justify-between items-center cursor-pointer hover:opacity-90 transition">
+            <h3 class="${isLarge ? 'text-2xl' : 'text-lg'} font-extrabold tracking-wide">${title}</h3>
+            <span class="text-xs font-mono opacity-75">${list.length}</span>
+          </div>
+          <div class="overflow-x-auto flex-1">
+            <table class="w-full text-left border-collapse ${textSize}">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-400 uppercase text-xs bg-slate-950/40">
+                  <th class="${cellPad} w-12">#</th>
+                  <th class="${cellPad}">Pòzwa</th>
+                  <th class="${cellPad} text-right">Pùnktë (Jakòsc)</th>
+                  <th class="${cellPad} text-right">Chùtkòsc (CPM)</th>
+                  <th class="${cellPad} text-right">Dokładnota</th>
+                  <th class="${cellPad} text-right">Czas</th>
+                  <th class="${cellPad} text-right">Data i gòdzëna</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${bodyHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLiveDashboard() {
+      const container = document.getElementById('liveContentArea');
+      if (!container) return;
+
+      if (liveMode === 'grid') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+            ${buildLiveTableCard('best', false)}
+            ${buildLiveTableCard('recent', false)}
+            ${buildLiveTableCard('fastest', false)}
+            ${buildLiveTableCard('accurate', false)}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="max-w-7xl mx-auto">
+            ${buildLiveTableCard(liveMode, true)}
+          </div>
+        `;
+      }
     }
   </script>
 </body>
